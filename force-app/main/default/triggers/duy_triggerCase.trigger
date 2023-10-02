@@ -10,11 +10,10 @@ trigger duy_triggerCase on Case(
   if (Trigger.isAfter && Trigger.isUpdate) {
      DUY_caseTriggerHandler.onAfterUpdate(Trigger.new, Trigger.oldMap);
   }
-//   if (Trigger.isBefore && Trigger.isInsert) {
-    
-//      DUY_caseTriggerHandler.onBeforeInsert(Trigger.new);
-//   }
-//   if (Trigger.isAfter && Trigger.isInsert) {
-//      DUY_caseTriggerHandler.onAfterInsert(Trigger.new);
-//   }
+  // if (Trigger.isBefore && Trigger.isInsert) {
+  //    DUY_caseTriggerHandler.onBeforeInsert(Trigger.new);
+  // }
+  if (Trigger.isAfter && Trigger.isInsert) {
+     DUY_caseTriggerHandler.onAfterInsert(Trigger.new);
+  }
 }

@@ -2,6 +2,15 @@ public with sharing class DUY_caseTriggerHandler {
     public static void onAfterUpdate(List<Case> newCases, Map<Id,Case> oldMap) {
         handleUpdateTicketHistory(newCases, oldMap);
     }
+    public static void onAfterInsert(List<Case> newCases) {
+        // code Submit Status -->
+        List<Id> caseIds = new List<Id>();
+        for (Case cs : newCases) {
+            caseIds.add(cs.Id);
+        }
+        updateSubmitStatusAsync(caseIds);
+        // <--
+    }
 
     private static void handleUpdateTicketHistory(List<Case> newCases, Map<Id,Case> oldMap){
         List<VMO_TicketHistory__c> ticketHandlers = new List<VMO_TicketHistory__c>();
@@ -56,5 +65,21 @@ public with sharing class DUY_caseTriggerHandler {
         ticketHistory.VMO_ChangedUser__c = currentCase.LastModifiedById;
         ticketHandlers.add(ticketHistory);
     }
-    
+
+    // code Submit Status -->
+    @future
+    public static void updateSubmitStatusAsync(List<Id> caseIds) {
+        List<Case> casesToUpdate = new List<Case>();
+        DateTime startOfDay = DateTime.now().date();
+        List<Case> queriedCases = [SELECT Id, SubmitSts__c, CreatedDate FROM Case WHERE Id IN :caseIds AND CreatedDate >= :startOfDay];
+
+        for (Case cs : queriedCases) {
+            if (cs.SubmitSts__c == 'New') {
+                cs.SubmitSts__c = 'Submitted';
+                casesToUpdate.add(cs);
+            }
+        }
+            update casesToUpdate;
+    }
+    // <--
 }
